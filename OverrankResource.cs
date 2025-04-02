@@ -11,5 +11,6 @@ namespace Overrank
     {
         public StyleRank[] ranks;
         public Material[] rankMats;
+        public AudioClip[] rankAscendClips;
     }
 }
