@@ -12,5 +12,7 @@ namespace Overrank
         public StyleRank[] ranks;
         public Material[] rankMats;
         public AudioClip[] rankAscendClips;
+        public int ultrakillRankMax = 1500;
+        public float ultrakillRankDrain = 8f;
     }
 }

@@ -21,6 +21,9 @@ namespace Overrank
             src.volume = 0.5f;
             lastPlayedIndex = -1;
             defaultRankMaterial = __instance.rankImage.material;
+
+            __instance.ranks[7].drainSpeed = Database.Resource.ultrakillRankDrain;
+            __instance.ranks[7].maxMeter = Database.Resource.ultrakillRankMax;
             __instance.ranks.AddRange(Database.Resource.ranks);
         }
 
@@ -100,7 +103,7 @@ namespace Overrank
 
         private static float RaisedTime(float t)
         {
-            return Mathf.Clamp01(3f * (t - 0.333f));
+            return Mathf.Clamp01(3f * (t - 0.333f) - 0.25f);
         }
 
         private static Color BlendColor(Color a, Color b, float t)

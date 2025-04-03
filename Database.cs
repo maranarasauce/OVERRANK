@@ -24,7 +24,11 @@ namespace Overrank
 
         private static void OverwriteConfig()
         {
-            string configFile = File.ReadAllText(Path.Combine(Paths.PackedPath, "config.txt"));
+            string configPath = Path.Combine(Paths.PackedPath, "config.txt");
+            if (!File.Exists(configPath))
+                return;
+            string configFile = File.ReadAllText(configPath);
+
             string[] lines = configFile.Split('\n');
             Dictionary<string, float> lib = new Dictionary<string, float>();
             foreach (string line in lines)
@@ -43,6 +47,8 @@ namespace Overrank
             resource.ranks[1].maxMeter = (int)lib["hellborn_max"];
             resource.ranks[2].drainSpeed =  lib["omnicide_drain"];
             resource.ranks[2].maxMeter = (int)lib["omnicide_max"];
+            resource.ultrakillRankDrain = lib["ultrakill_drain"];
+            resource.ultrakillRankMax = (int)lib["ultrakill_max"];
         }
     }
 }
