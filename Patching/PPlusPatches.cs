@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +12,21 @@ namespace Overrank.Patching
 {
     public static class PPlusPatches
     {
+        [HarmonyPatch(typeof(LevelSelectPanel), nameof(LevelSelectPanel.CheckScore))]
+        [HarmonyPostfix]
+        private static void LevelSelectPanelPP(LevelSelectPanel __instance)
+        {
+            if (Progress.HasPP(__instance.levelNumber))
+            {
+                TMP_Text componentInChildren = __instance.transform.Find("Stats").Find("Rank").GetComponentInChildren<TMP_Text>();
+                componentInChildren.text = $"<color=#FFFFFF>{Database.Resource.ppRankName}</color>";
+                componentInChildren.fontSize = 40;
+                Image component = componentInChildren.transform.parent.GetComponent<Image>();
+                component.color = Database.Resource.ppRankColor;
+                component.sprite = __instance.filledPanel;
+            }
+        }
+
         [HarmonyPatch(typeof(StyleHUD), nameof(StyleHUD.Start))]
         [HarmonyPrefix]
         private static void AttachUPlusTracker(StyleHUD __instance)
@@ -126,6 +142,7 @@ namespace Overrank.Patching
                 __instance.fr.totalRank.transform.parent.GetComponent<Image>().color = Database.Resource.ppRankColor;
                 __instance.fr.totalRank.fontSize = 200;
                 __instance.fr.SetRank(text);
+                Progress.AchievePP();
             }
             
         }

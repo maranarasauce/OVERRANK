@@ -102,6 +102,7 @@
     <Compile Include="Patching\RankPatches.cs" />
     <Compile Include="Patching\PPlusPatches.cs" />
     <Compile Include="Paths.cs" />
+    <Compile Include="Progress\Progress.cs" />
     <Compile Include="Singletons.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

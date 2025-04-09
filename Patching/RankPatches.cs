@@ -109,21 +109,6 @@ namespace Overrank.Patching
         private static Color BlendColor(Color a, Color b, float t)
         {
             return Color.Lerp(a, b, t);
-            Vector3 aHSV = Vector3.zero;
-            Color.RGBToHSV(a, out aHSV.x, out aHSV.y, out aHSV.z);
-            Vector3 bHSV = Vector3.zero;
-            Color.RGBToHSV(b, out bHSV.x, out bHSV.y, out bHSV.z);
-
-            if (bHSV.x > 0.5f && aHSV.y < 0.5f)
-            {
-                bHSV.x -= 1f;
-            } else if (bHSV.x < 0.5f && aHSV.y > 0.5f)
-            {
-                bHSV.x += 1f;
-            }
-
-            Vector3 c = Vector3.Lerp(aHSV, bHSV, t);
-            return Color.HSVToRGB(c.x, c.y, c.z);
         }
 
         const string CrackSizeKey = "_Crack_Size";
