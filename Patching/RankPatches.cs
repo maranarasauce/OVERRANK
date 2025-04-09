@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Overrank
+namespace Overrank.Patching
 {
     public static class RankPatches
     {
@@ -65,7 +65,7 @@ namespace Overrank
                     return;
                 src.clip = Database.Resource.rankAscendClips[index];
                 src.Play();
-                lastPlayedIndex = index; indexRefresh = 30f;
+                lastPlayedIndex = index; indexRefresh = 5f;
             }
         }
 

@@ -8,6 +8,7 @@ using System.Reflection;
 using System;
 using UnityEngine.InputSystem;
 using BepInEx.Logging;
+using Overrank.Patching;
 
 namespace Overrank
 {
@@ -20,10 +21,13 @@ namespace Overrank
         {
             harmony = new Harmony("maranara_overrank");
             harmony.PatchAll(typeof(RankPatches));
+            harmony.PatchAll(typeof(PPlusPatches));
+            harmony.PatchAll(typeof(CheatPatches));
 
             src = BepInEx.Logging.Logger.CreateLogSource("overrank");
 
             Database.Init();
+
         }
 
         private void Update()

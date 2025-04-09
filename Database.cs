@@ -20,6 +20,7 @@ namespace Overrank
             AssetBundle bundle = AssetBundle.LoadFromFile(path);
             resource = bundle.LoadAsset<OverrankResource>(Path.Combine(Paths.BundleProjectPath, "OverrankResource.asset"));
             OverwriteConfig();
+
         }
 
         private static void OverwriteConfig()
@@ -49,6 +50,12 @@ namespace Overrank
             resource.ranks[2].maxMeter = (int)lib["omnicide_max"];
             resource.ultrakillRankDrain = lib["ultrakill_drain"];
             resource.ultrakillRankMax = (int)lib["ultrakill_max"];
+            resource.healthRequirement = (int)lib["prequirement_hp"];
+            resource.styleRequirementMod = lib["prequirement_rankstylemodifier"];
+            resource.styleTimeSpeeds = new float[3];
+            resource.styleTimeSpeeds[0] = lib["prequirement_overkillspeed"];
+            resource.styleTimeSpeeds[1] = lib["prequirement_hellbornspeed"];
+            resource.styleTimeSpeeds[2] = lib["prequirement_omnicidespeed"];
         }
     }
 }
