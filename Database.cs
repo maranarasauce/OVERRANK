@@ -19,7 +19,7 @@ namespace Overrank
             string path = Path.Combine(Paths.PackedPath, "overrank");
             AssetBundle bundle = AssetBundle.LoadFromFile(path);
             resource = bundle.LoadAsset<OverrankResource>(Path.Combine(Paths.BundleProjectPath, "OverrankResource.asset"));
-            OverwriteConfig();
+            //OverwriteConfig();
 
         }
 

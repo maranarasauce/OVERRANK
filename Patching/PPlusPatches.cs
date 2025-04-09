@@ -12,19 +12,26 @@ namespace Overrank.Patching
 {
     public static class PPlusPatches
     {
+        [HarmonyPatch(typeof(GameProgressSaver), nameof(GameProgressSaver.SetSlot))]
+        [HarmonyPostfix]
+        private static void SetSlot()
+        {
+            Progress.SlotSwitched();
+        }
+
         [HarmonyPatch(typeof(LevelSelectPanel), nameof(LevelSelectPanel.CheckScore))]
         [HarmonyPostfix]
         private static void LevelSelectPanelPP(LevelSelectPanel __instance)
         {
+            TMP_Text componentInChildren = __instance.transform.Find("Stats").Find("Rank").GetComponentInChildren<TMP_Text>();
             if (Progress.HasPP(__instance.levelNumber))
             {
-                TMP_Text componentInChildren = __instance.transform.Find("Stats").Find("Rank").GetComponentInChildren<TMP_Text>();
                 componentInChildren.text = $"<color=#FFFFFF>{Database.Resource.ppRankName}</color>";
                 componentInChildren.fontSize = 40;
                 Image component = componentInChildren.transform.parent.GetComponent<Image>();
                 component.color = Database.Resource.ppRankColor;
                 component.sprite = __instance.filledPanel;
-            }
+            } else componentInChildren.fontSize = 60;
         }
 
         [HarmonyPatch(typeof(StyleHUD), nameof(StyleHUD.Start))]

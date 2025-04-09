@@ -10,6 +10,13 @@ namespace Overrank
 {
     public static class Paths
     {
+        public static string ProgressFile
+        {
+            get
+            {
+                return $"pp{GameProgressSaver.currentSlot}.bepis";
+            }
+        }
         public static string BundleProjectPath
         {
             get
