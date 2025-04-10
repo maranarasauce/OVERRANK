@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Overrank.Patching
@@ -23,15 +24,75 @@ namespace Overrank.Patching
         [HarmonyPostfix]
         private static void LevelSelectPanelPP(LevelSelectPanel __instance)
         {
+            bool hasPP = Progress.HasPP(__instance.levelNumber);
             TMP_Text componentInChildren = __instance.transform.Find("Stats").Find("Rank").GetComponentInChildren<TMP_Text>();
-            if (Progress.HasPP(__instance.levelNumber))
+            if (hasPP)
             {
+                PPLayerSelect.AchievePP(__instance.ls);
                 componentInChildren.text = $"<color=#FFFFFF>{Database.Resource.ppRankName}</color>";
                 componentInChildren.fontSize = 40;
                 Image component = componentInChildren.transform.parent.GetComponent<Image>();
                 component.color = Database.Resource.ppRankColor;
                 component.sprite = __instance.filledPanel;
             } else componentInChildren.fontSize = 60;
+
+
+            int num = __instance.levelNumber;
+            if (__instance.levelNumber == 666 || __instance.levelNumber == 100)
+            {
+                num += __instance.levelNumberInLayer - 1;
+            }
+
+            RankData rank = GameProgressSaver.GetRank(num);
+            int difficulty = PrefsManager.Instance.GetInt("difficulty");
+            if (rank.ranks[difficulty] == 12 && (rank.challenge || !__instance.challengeIcon) && (__instance.allSecrets || rank.secretsAmount == 0))
+            {
+                if (hasPP)
+                {
+                    Color ube = Color.Lerp(Database.Resource.ppRankColor, Color.white, 0.5f);
+                    TMP_Text componentInChildren2 = __instance.challengeIcon.GetComponentInChildren<TMP_Text>();
+                    __instance.GetComponent<Image>().color = ube;
+                    componentInChildren2.color = ube;
+                } else
+                {
+                    __instance.GetComponent<Image>().color = new Color(1f, 0.686f, 0f, 0.75f);
+                }
+                
+            }
+            else
+            {
+                __instance.GetComponent<Image>().color = __instance.defaultColor;
+            }
+        }
+
+
+        [HarmonyPatch(typeof(LayerSelect), nameof(LayerSelect.Awake))]
+        [HarmonyPrefix]
+        private static void LayerSelectEnable(LayerSelect __instance)
+        {
+            PPLayerSelect.AddLayerSelect(__instance);
+        }
+        
+        [HarmonyPatch(typeof(LayerSelect), nameof(LayerSelect.Gold))]
+        [HarmonyPostfix]
+        private static void LayerSelectCheck(LayerSelect __instance)
+        {
+            PPLayerSelect.CheckPP(__instance);
+        }
+
+        [HarmonyPatch(typeof(LayerSelect), nameof(LayerSelect.SecretMissionDone))]
+        [HarmonyPostfix]
+        private static void LayerSelectCheck2(LayerSelect __instance)
+        {
+            PPLayerSelect.CheckPP(__instance);
+        }
+
+
+        [HarmonyPatch(typeof(LayerSelect), nameof(LayerSelect.AddScore))]
+        [HarmonyPostfix]
+        private static void LayerSelectCheck3(LayerSelect __instance)
+        {
+            PPLayerSelect.CheckPP(__instance);
         }
 
         [HarmonyPatch(typeof(StyleHUD), nameof(StyleHUD.Start))]

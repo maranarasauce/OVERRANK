@@ -99,6 +99,7 @@
     <Compile Include="Database.cs" />
     <Compile Include="OverrankResource.cs" />
     <Compile Include="Patching\CheatPatches.cs" />
+    <Compile Include="Patching\PPLayerSelect.cs" />
     <Compile Include="Patching\RankPatches.cs" />
     <Compile Include="Patching\PPlusPatches.cs" />
     <Compile Include="Paths.cs" />
