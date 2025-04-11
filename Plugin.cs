@@ -35,10 +35,6 @@ namespace Overrank
             /*if (Keyboard.current.digit7Key.wasPressedThisFrame)
             {
                 StyleHUD.Instance.AddPoints(600, string.Empty);
-            }
-            if (Keyboard.current.digit8Key.wasPressedThisFrame)
-            {
-                StyleHUD.Instance.AddPoints(-600, string.Empty);
             }*/
         }
 

@@ -18,7 +18,8 @@ namespace Overrank.Patching
         private static void InitRanks(StyleHUD __instance)
         {
             src = __instance.gameObject.AddComponent<AudioSource>();
-            src.volume = 0.5f;
+            src.volume = 1f;
+            src.outputAudioMixerGroup = DefaultReferenceManager.Instance.ineffectiveSound.GetComponent<AudioSource>().outputAudioMixerGroup;
             lastPlayedIndex = -1;
             defaultRankMaterial = __instance.rankImage.material;
 
