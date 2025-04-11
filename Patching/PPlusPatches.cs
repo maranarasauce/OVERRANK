@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Overrank.Behaviors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,11 +25,17 @@ namespace Overrank.Patching
         [HarmonyPostfix]
         private static void LevelSelectPanelPP(LevelSelectPanel __instance)
         {
-            bool hasPP = Progress.HasPP(__instance.levelNumber);
+            int num = __instance.levelNumber;
+            if (__instance.levelNumber == 666 || __instance.levelNumber == 100)
+            {
+                num += __instance.levelNumberInLayer - 1;
+            }
+
+            bool hasPP = Progress.HasPP(num);
             TMP_Text componentInChildren = __instance.transform.Find("Stats").Find("Rank").GetComponentInChildren<TMP_Text>();
             if (hasPP)
             {
-                PPLayerSelect.AchievePP(__instance.ls);
+                PPLayerSelect.AttachLink(__instance.ls).GivePP();
                 componentInChildren.text = $"<color=#FFFFFF>{Database.Resource.ppRankName}</color>";
                 componentInChildren.fontSize = 40;
                 Image component = componentInChildren.transform.parent.GetComponent<Image>();
@@ -36,23 +43,19 @@ namespace Overrank.Patching
                 component.sprite = __instance.filledPanel;
             } else componentInChildren.fontSize = 60;
 
-
-            int num = __instance.levelNumber;
-            if (__instance.levelNumber == 666 || __instance.levelNumber == 100)
-            {
-                num += __instance.levelNumberInLayer - 1;
-            }
-
             RankData rank = GameProgressSaver.GetRank(num);
             int difficulty = PrefsManager.Instance.GetInt("difficulty");
             if (rank.ranks[difficulty] == 12 && (rank.challenge || !__instance.challengeIcon) && (__instance.allSecrets || rank.secretsAmount == 0))
             {
                 if (hasPP)
                 {
-                    Color ube = Color.Lerp(Database.Resource.ppRankColor, Color.white, 0.5f);
-                    TMP_Text componentInChildren2 = __instance.challengeIcon.GetComponentInChildren<TMP_Text>();
-                    __instance.GetComponent<Image>().color = ube;
-                    componentInChildren2.color = ube;
+                    Color ube = Color.Lerp(Database.Resource.ppRankColor, Color.white, 0.5f); __instance.GetComponent<Image>().color = ube;
+                    if (__instance.challengeIcon)
+                    {
+                        TMP_Text componentInChildren2 = __instance.challengeIcon.GetComponentInChildren<TMP_Text>();
+                        
+                        componentInChildren2.color = ube;
+                    }
                 } else
                 {
                     __instance.GetComponent<Image>().color = new Color(1f, 0.686f, 0f, 0.75f);
@@ -65,48 +68,80 @@ namespace Overrank.Patching
             }
         }
 
-
-        [HarmonyPatch(typeof(LayerSelect), nameof(LayerSelect.Awake))]
+        [HarmonyPatch(typeof(ChapterSelectButton), nameof(ChapterSelectButton.Awake))]
         [HarmonyPrefix]
-        private static void LayerSelectEnable(LayerSelect __instance)
+        private static void ChapterSelectEnable(ChapterSelectButton __instance)
         {
-            PPLayerSelect.AddLayerSelect(__instance);
+            PPChapterSelect.AttachLink(__instance);
         }
-        
+
+        [HarmonyPatch(typeof(LayerSelect), nameof(LayerSelect.CheckScore))]
+        [HarmonyPrefix]
+        private static void ChapterSelectFix(LayerSelect __instance)
+        {
+            PPLayerSelect.AttachLink(__instance).CheckScores();
+        }
+
+        [HarmonyPatch(typeof(ChapterSelectButton), nameof(ChapterSelectButton.CheckScore))]
+        [HarmonyPostfix]
+        private static void ChapterSelectFix(ChapterSelectButton __instance)
+        {
+            PPChapterSelect.AttachLink(__instance).CheckPP();
+        }
+
+        [HarmonyPatch(typeof(ChapterSelectButton), nameof(ChapterSelectButton.OnDisable))]
+        [HarmonyPostfix]
+        private static void ChapterSelectDisable(ChapterSelectButton __instance)
+        {
+            PPChapterSelect.GetLink(__instance)?.OnDisable();
+        }
+
+        [HarmonyPatch(typeof(LayerSelect), nameof(LayerSelect.OnDisable))]
+        [HarmonyPrefix]
+        private static void LayerSelectDisable(LayerSelect __instance)
+        {
+            PPLayerSelect.GetLink(__instance)?.OnDisable();
+        }
+
         [HarmonyPatch(typeof(LayerSelect), nameof(LayerSelect.Gold))]
         [HarmonyPostfix]
         private static void LayerSelectCheck(LayerSelect __instance)
         {
-            PPLayerSelect.CheckPP(__instance);
+            PPLayerSelect.GetLink(__instance)?.CheckPP();
         }
 
         [HarmonyPatch(typeof(LayerSelect), nameof(LayerSelect.SecretMissionDone))]
         [HarmonyPostfix]
         private static void LayerSelectCheck2(LayerSelect __instance)
         {
-            PPLayerSelect.CheckPP(__instance);
+            PPLayerSelect.GetLink(__instance)?.CheckPP();
         }
-
 
         [HarmonyPatch(typeof(LayerSelect), nameof(LayerSelect.AddScore))]
         [HarmonyPostfix]
         private static void LayerSelectCheck3(LayerSelect __instance)
         {
-            PPLayerSelect.CheckPP(__instance);
+            PPLayerSelect.GetLink(__instance)?.CheckPP();
         }
 
         [HarmonyPatch(typeof(StyleHUD), nameof(StyleHUD.Start))]
         [HarmonyPrefix]
         private static void AttachUPlusTracker(StyleHUD __instance)
         {
-            __instance.gameObject.AddComponent<PPlusTracker>();
+            if (SceneHelper.CurrentScene.ToLower() == "endless")
+                return;
+
+                __instance.gameObject.AddComponent<PPlusTracker>();
         }
 
         [HarmonyPatch(typeof(LevelStats), nameof(LevelStats.Start))]
         [HarmonyPrefix]
-        private static void WidenLevelStats(LevelStats __instance)
+        private static void InitializeUI(LevelStats __instance)
         {
-            __instance.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(300f, 345f);
+            if (SceneHelper.CurrentScene.ToLower() == "endless")
+                return;
+
+                __instance.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(300f, 345f);
 
             GameObject uiInst = GameObject.Instantiate(Database.Resource.requirementUI);
             uiInst.transform.SetParent(__instance.transform, true);
@@ -210,6 +245,7 @@ namespace Overrank.Patching
                 __instance.fr.totalRank.transform.parent.GetComponent<Image>().color = Database.Resource.ppRankColor;
                 __instance.fr.totalRank.fontSize = 200;
                 __instance.fr.SetRank(text);
+
                 Progress.AchievePP();
             }
             
