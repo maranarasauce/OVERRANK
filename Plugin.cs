@@ -32,10 +32,14 @@ namespace Overrank
 
         private void Update()
         {
-            /*if (Keyboard.current.digit7Key.wasPressedThisFrame)
+            if (Keyboard.current.digit7Key.wasPressedThisFrame)
             {
                 StyleHUD.Instance.AddPoints(600, string.Empty);
-            }*/
+            }
+            if (Keyboard.current.digit8Key.wasPressedThisFrame)
+            {
+                    StatsManager.Instance.stylePoints -= Mathf.RoundToInt(1000f);
+                }
         }
 
         static ManualLogSource src;

@@ -239,7 +239,7 @@ namespace Overrank.Patching
         private static void GetFinalRank(StatsManager __instance)
         {
             
-            if (__instance.rankScore == 12 && !__instance.asscon.cheatsEnabled && PPlusTracker.Instance.AchievedUPlus())
+            if (__instance.rankScore == 12 && !__instance.asscon.cheatsEnabled && PPlusTracker.Instance.AchievedUPlus(__instance))
             {
                 string text = $"<color=#FFFFFF>{Database.Resource.ppRankName}</color>";
                 __instance.fr.totalRank.transform.parent.GetComponent<Image>().color = Database.Resource.ppRankColor;

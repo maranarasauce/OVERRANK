@@ -86,8 +86,12 @@ namespace Overrank
             }
         }
 
-        public bool AchievedUPlus()
+        public bool AchievedUPlus(StatsManager stats)
         {
+            if (stats.stylePoints < stats.styleRanks[stats.styleRanks.Length - 1])
+            {
+                return false;
+            }
             return passedStyle && neverHurt;
         }
     }
